@@ -21,6 +21,29 @@
             margin: 0;
         }
 
+        .remove-link {
+            text-decoration: none;
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            position: relative;
+            left: 30px;
+            top: 1px;
+            font-size: x-large;
+        }
+
+        .link {
+            text-decoration: none;
+            background: transparent;
+            display: inline-block;
+            width: 13px;
+            height: 12px;
+            position: relative;
+            z-index:3;
+            right: 21px;
+            bottom: 1px;
+        }
+
         .full-height {
             height: 100vh;
         }
@@ -62,6 +85,10 @@
         .m-b-md {
             margin-bottom: 30px;
         }
+
+        .text-barre {
+            text-decoration: line-through;
+        }
     </style>
 </head>
 <body>
@@ -82,28 +109,57 @@
             My Todolist
         </div>
 
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
+
         <div class="col-md-offset-4 ">
-            <form action="#"
-            ">
-            {{ csrf_field() }}
-            <div class="form-group">
+            <form method="post" action="{{ route('todo.store') }}">
+                {{ csrf_field() }}
                 <label for="title" class="label">Title</label>
                 <input type="text" class="form-control" name="title" id="title">
-            </div>
-            <div class="form-group">
                 <label for="description" class="label">Description</label>
                 <textarea name="description" id="description" class="form-control"></textarea>
-            </div>
-            <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus-sign"></span>Ajouter
-            </button>
+
+                <button type="submit" class="btn btn-primary">
+                    <span class="glyphicon glyphicon-plus-sign"></span>
+                    Ajouter
+                </button>
             </form>
         </div>
         <div>
             <ul class="list-unstyled">
-                <li title="description"><input type="checkbox" name="taskDone[]"> My first task</li>
-                <li title="description"><input type="checkbox" name="taskDone[]"> My first task</li>
-                <li title="description"><input type="checkbox" name="taskDone[]"> My first task</li>
-                <li title="description"><input type="checkbox" name="taskDone[]"> My first task</li>
+                @if(empty($tasks))
+                Aucun élément trouvé
+                @else
+                @foreach($tasks as $task)
+                <li title="{{ $task->description }}">
+                    @if($task->done)
+                    <input type="checkbox" name="taskDone[]" id="{{ $task->id }}" checked>
+                    <a href="{{ route('todo.state',['id'=>$task->id]) }}" class="link"></a>
+                    @else
+                    <input type="checkbox" name="taskDone[]" id="{{ $task->id }}">
+                    <a href="{{ route('todo.state',['id'=>$task->id]) }}" class="link"></a>
+                    @endif
+
+
+                    @if($task->done)
+                        <h5 class="text-barre" style="display:inline-block">{{ $task->title}}</h5>
+                    @else
+                        <h5 style="display:inline-block">{{ $task->title}}</h5>
+                    @endif
+
+                    <a href="{{ route('todo.destroy',['id'=>$task->id]) }}" class="remove-link" style="color: red;font-weight: bold">x</a>
+                </li>
+                @endforeach
+                @endif
+
             </ul>
         </div>
     </div>

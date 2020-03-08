@@ -11,6 +11,7 @@
 |
 */
 
-Route::get('/', function () {
-    return view('todolist');
-});
+Route::get('/','TaskController@index')->name('home');
+Route::post('/','TaskController@store')->name('todo.store');
+Route::get('/state/{id?}','TaskController@updateState')->name('todo.state');
+Route::get('/{id}','TaskController@delete')->name('todo.destroy');

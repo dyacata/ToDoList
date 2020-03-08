@@ -9,12 +9,13 @@ class TaskController extends Controller
 {
     public function index(){
         $tasks = Task::all();
-        return response()->json($tasks);
+        return view('todolist',compact('tasks'));
     }
 
     public function store(Request $request){
+
         $request->validate([
-            'title'=>'bail|required|unique:tasks|max:150',
+            'title'=>'required|max:150',
             'description'=>'required',
         ]);
 
@@ -23,8 +24,9 @@ class TaskController extends Controller
         $task->description = $request->input('description');
         $task->done = false;
 
-        $task->save;
+        $task->save();
 
+        return redirect()->route('home');
     }
 
     public function update(){
@@ -34,11 +36,19 @@ class TaskController extends Controller
     public function delete($id){
         $task = Task::findOrFail($id);
         $task->delete();
+        return redirect()->route('home');
     }
 
     public function show($id){
         $task = Task::findOrFail($id);
 
-        return response()->json($task);
+        return view('todolist-edit',compat('task'));
+    }
+
+    public function updateState($id){
+        $task = Task::findOrFail($id);
+        ($task->done)?$task->update(['done'=>false]):$task->update(['done'=>true]);
+
+        return redirect()->route('home');
     }
 }
